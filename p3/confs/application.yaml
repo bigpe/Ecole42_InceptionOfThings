@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-iot-app
+spec:
+  project: development
+  source:
+    repoURL: https://github.com/ilkou/oouklich.git
+    targetRevision: HEAD
+    path: manifests
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
