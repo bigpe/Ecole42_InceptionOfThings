@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source /tmp/config.sh
+
 # Deploy keys to allow all nodes to connect each others as root
 mkdir -p /root/.ssh
 mv /tmp/id_rsa*  /root/.ssh/
@@ -15,14 +17,10 @@ chown root:root /root/.ssh/authorized_keys
 echo "127.0.0.1 $(hostname)" >> /etc/hosts
 
 # Add kubemaster1 in  /etc/hosts
-echo "192.168.42.110  oouklichS" >> /etc/hosts
+echo "$SERVER_IP  $SERVER_NAME" >> /etc/hosts
 
 echo "Installing k3s(agent) v1.21.4+k3s1..."
-scp -o StrictHostKeyChecking=no root@oouklichs:/var/lib/rancher/k3s/server/token /tmp/token
+scp -o StrictHostKeyChecking=no root@$SERVER_NAME:/var/lib/rancher/k3s/server/token /tmp/token
 export INSTALL_K3S_VERSION=v1.21.4+k3s1
-export INSTALL_K3S_EXEC="agent --server https://oouklichS:6443 --token-file /tmp/token --node-ip=192.168.42.111"
+export INSTALL_K3S_EXEC="agent --server https://$SERVER_NAME:6443 --token-file /tmp/token --node-ip=$WORKER_IP"
 curl -sfL https://get.k3s.io | sh -
-
-echo "Setting up aliases"
-echo "alias k='kubectl'" >> /home/vagrant/.bashrc
-echo "alias c='clear'" >> /home/vagrant/.bashrc

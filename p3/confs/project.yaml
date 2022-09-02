@@ -5,15 +5,11 @@ metadata:
   labels:
     app: argocd-iot
 spec:
-  # Project description
   description: Our ArgoCD Project to deploy our app locally
-  # Allow manifests to deploy only from ilkou git repositories
   sourceRepos:
-    - "https://github.com/ilkou/*"
-  # Only permit to deploy applications in the same cluster
+    - "https://github.com/bigpe/*"
   destinations:
     - namespace: dev
       server: https://kubernetes.default.svc
-  # Enables namespace orphaned resource monitoring.
   orphanedResources:
     warn: false

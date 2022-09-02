@@ -5,7 +5,7 @@ metadata:
 spec:
   project: development
   source:
-    repoURL: https://github.com/ilkou/oouklich.git
+    repoURL: https://github.com/bigpe/Ecole42_IOT_Manifest.git
     targetRevision: HEAD
     path: manifests
     directory:

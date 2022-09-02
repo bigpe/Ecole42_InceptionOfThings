@@ -1,45 +1,34 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+require_relative '../confs/config'
 
 Vagrant.configure("2") do |config|
+    config.vm.box = "centos/7"
 
-  config.vm.box = "centos/8"
-  config.vm.box_url = "https://app.vagrantup.com/centos/boxes/8"
-
-  # Install net-tools for all machines  
-  config.vm.provision "shell", inline: <<-SHELL
-    # yum update -y
-    yum install -y net-tools
-  SHELL
-
-  config.vm.define "oouklichS" do |control|
-    control.vm.hostname = "oouklichS"
-    control.vm.network "private_network", ip: "192.168.42.110"
-    control.vm.provider "virtualbox" do |v|
-      v.customize ["modifyvm", :id, "--name", "oouklichS"]
-      v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      v.memory = 512
-      v.cpus = 1
+    config.vm.provider "virtualbox" do |v|
+        v.memory = 512
+        v.cpus = 1
+        v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     end
-    control.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
-    control.vm.provision "file", source: "~/.ssh/id_rsa", destination: "/tmp/id_rsa"
-    control.vm.provision "shell", privileged: true, path: "scripts/installS.sh"
-  end
-  
-  config.vm.define "oouklichSW" do |control|
-    control.vm.hostname = "oouklichSW"
-    control.vm.network "private_network", ip: "192.168.42.111"
-    control.vm.provider "virtualbox" do |v|
-      v.customize ["modifyvm", :id, "--name", "oouklichSW"]
-      v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      v.memory = 512
-      v.cpus = 1
-    end
-    control.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
-    control.vm.provision "file", source: "~/.ssh/id_rsa", destination: "/tmp/id_rsa"
-    control.vm.provision "shell", privileged: true, path: "scripts/installSW.sh"
-  end
 
+    config.vm.provision "shell", inline: <<-SHELL
+        yum install -y net-tools
+    SHELL
+
+    config.vm.provision "file", source: "../confs/config.sh", destination: "/tmp/config.sh"
+    config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/tmp/id_rsa.pub"
+    config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "/tmp/id_rsa"
+
+    config.vm.define $server_name do |machine|
+        machine.vm.hostname = $server_name
+        machine.vm.network "private_network", ip: $server_ip
+        machine.vm.provision "shell", privileged: true, path: "scripts/installS.sh"
+        machine.vm.provision "shell", inline: $set_up_aliases
+    end
+
+    config.vm.define $worker_name do |machine|
+        machine.vm.hostname = $worker_name
+        machine.vm.network "private_network", ip: $worker_ip
+        machine.vm.provision "shell", privileged: true, path: "scripts/installSW.sh"
+        machine.vm.provision "shell", inline: $set_up_aliases
+    end
 end

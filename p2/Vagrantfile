@@ -1,26 +1,28 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+require_relative '../confs/config'
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "centos/8"
+    config.vm.box = "centos/7"
 
-  config.vm.provision "shell", inline: <<-SHELL
-    yum install -y net-tools
-  SHELL
+    config.vm.provision "shell", inline: <<-SHELL
+        yum install -y net-tools
+    SHELL
 
-  config.vm.define "erahimiS"
-  config.vm.hostname = "erahimiS"
-  config.vm.network "private_network", ip: "192.168.42.110"
-  config.vm.provision "file", source: "confs/deployment.yaml", destination: "/tmp/deployment.yaml"
-  config.vm.provision "file", source: "confs/app1", destination: "/tmp/app1"
-  config.vm.provision "file", source: "confs/app2", destination: "/tmp/app2"
-  config.vm.provision "file", source: "confs/app3", destination: "/tmp/app3"
-  config.vm.provider "virtualbox" do |v|
-    v.name = "erahimiS"
-    v.memory = 1024
-    v.cpus = 1
-  end
-  config.vm.provision "shell", privileged: true, path: "scripts/install.sh"
+    config.vm.provider "virtualbox" do |v|
+        v.name = $server_name
+        v.memory = 1024
+        v.cpus = 1
+    end
 
+    config.vm.define $server_name
+    config.vm.hostname = $server_name
+    config.vm.network "private_network", ip: $server_ip
+
+    config.vm.provision "file", source: "confs/deployment.yaml", destination: "/tmp/deployment.yaml"
+    config.vm.provision "file", source: "confs/app1", destination: "/tmp/app1"
+    config.vm.provision "file", source: "confs/app2", destination: "/tmp/app2"
+    config.vm.provision "file", source: "confs/app3", destination: "/tmp/app3"
+    config.vm.provision "file", source: "../confs/config.sh", destination: "/tmp/config.sh"
+    config.vm.provision "shell", privileged: true, path: "scripts/install.sh"
+    config.vm.provision "shell", inline: $set_up_aliases
 end
