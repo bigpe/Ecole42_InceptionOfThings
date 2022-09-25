@@ -3,15 +3,22 @@ require_relative '../confs/config'
 Vagrant.configure("2") do |config|
 
     config.vm.box = "centos/7"
-    config.vm.provision "file", source: "./confs/", destination: "/tmp/p3/confs/"
-    config.vm.provision "file", source: "./scripts/", destination: "/tmp/p3/confs/"
+    config.vm.provision "file", source: "./confs/", destination: "/tmp/p3/"
+    config.vm.provision "file", source: "./scripts/", destination: "/tmp/p3/"
+    config.vm.box_check_update = false
+    config.vm.network "forwarded_port", guest: 8888, host: 8888
+    config.vm.network "forwarded_port", guest: 8080, host: 8080
+    config.vm.network "forwarded_port", guest: 80, host: 80
+    config.vm.network "forwarded_port", guest: 443, host: 443
 
     config.vm.provider "virtualbox" do |v|
-        v.name = "test"
-        v.memory = 1024
+        v.memory = 4096
         v.cpus = 2
     end
 
-    config.vm.provision "shell", privileged: true, path: "scripts/init.sh"
-    config.vm.provision "shell", privileged: true, path: "scripts/run.sh"
+    config.vbguest.installer_options = { allow_kernel_upgrade: true }
+
+    config.vm.provision "shell", privileged: true, path: "scripts/setup.sh"
+    config.vm.provision "shell", privileged: true, path: "scripts/deploy.sh"
+    config.vm.provision "shell", inline: $set_up_aliases
 end

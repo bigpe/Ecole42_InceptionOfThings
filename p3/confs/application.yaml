@@ -1,19 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-iot-app
+  name: will-playground-app
+  namespace: argocd
 spec:
-  project: development
+  project: default
   source:
-    repoURL: https://github.com/bigpe/Ecole42_IOT_Manifest.git
+    repoURL: 'https://github.com/bigpe/Ecole42_IOT_Manifest.git'
     targetRevision: HEAD
     path: manifests
-    directory:
-      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: dev
   syncPolicy:
     automated:
-      prune: false
+      prune: true
       selfHeal: true
