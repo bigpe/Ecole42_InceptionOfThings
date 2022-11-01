@@ -23,5 +23,3 @@ sudo kubectl apply -f /tmp/p3/confs/project.yaml -n argocd
 sudo kubectl apply -f /tmp/p3/confs/application.yaml -n argocd
 
 sleep 60
-
-kubectl port-forward svc/argocd-server --address 0.0.0.0 -n argocd 8082:80 2>&1 >/dev/null &
