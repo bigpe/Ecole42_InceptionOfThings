@@ -1,10 +1,11 @@
 #!/bin/bash
 
+sudo -i
+
 export PATH=$PATH:/usr/local/bin
 echo "export PATH=$PATH:/usr/local/bin" >> .bashrc
 source .bashrc
 
-yum install -y yum-utils nano
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh ./get-docker.sh
 groupadd docker
@@ -16,8 +17,8 @@ systemctl start docker
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
 echo "$(<kubectl.sha256) kubectl" | sha256sum --check
-install -o root -g root -m 0755 kubectl /usr/bin/kubectl
 chmod +x kubectl
+install -o root -g root -m 0755 kubectl /usr/bin/kubectl
 mv ./kubectl /usr/local/bin
 
 curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
